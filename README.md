@@ -1,1 +1,1 @@
-# MaturitniProjekt
+# Daily AMC problem
