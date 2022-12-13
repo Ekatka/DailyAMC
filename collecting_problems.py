@@ -47,7 +47,7 @@ def save_images(statement):
         filename, headers = opener.retrieve(url, f"ProblemStatements/{dir_name}/images/{idx}.png")
 
     for idx, img in enumerate(img_tags):
-        newPath = f"{dir_name}/images/{idx}.png"
+        newPath = f"ProblemStatements/{dir_name}/images/{idx}.png"
         img["src"] = newPath
 
     return str(problem_soup)
@@ -65,7 +65,8 @@ def save_answer(answer):
     link_file.write(new_url)
     link_file.close()
 
-year = 2011
+year = 2013
+
 
 
 base_url = f"https://artofproblemsolving.com/wiki/index.php/{year}_AMC_12A_Problems/Problem_1"
