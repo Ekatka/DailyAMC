@@ -19,7 +19,7 @@ def test_insert():
         print(x)
 
 
-def insert_problem_statement(statement, dif, origin, answer_value):
+def insert_problem_statement(statement, dif, origin, results, answer):
     mydb = mysql.connector.connect(
         host="localhost",
         user="ekatka",
@@ -27,8 +27,16 @@ def insert_problem_statement(statement, dif, origin, answer_value):
     )
     mycursor = mydb.cursor()
     mycursor.execute("USE dailyAMC;")
-    mysql_insert_query = 'INSERT INTO Problems(statement, difficulty, original, answer) VALUES (%s, %s, %s, %s)'
-    mycursor.execute( mysql_insert_query, (statement, dif, origin, answer_value))
+    mysql_insert_problems = 'INSERT INTO Problems(statement, difficulty, original, answer) VALUES (%s, %s, %s, %s)'
+    mycursor.execute(mysql_insert_problems, (statement, dif, origin, results[answer]))
+    mycursor.execute('SET @last_problem_id =  LAST_INSERT_ID()')
+    for ans in results:
+        if results[ans] == results[answer]:
+            is_ans = 1
+        else:
+            is_ans = 0
+        mysql_insert_solutions = 'INSERT INTO Solutions(problem_id, solution_text, is_answer) VALUES (@last_problem_id, %s, %s)'
+        mycursor.execute(mysql_insert_solutions, (results[ans], is_ans))
     mydb.commit()
 
 
@@ -49,6 +57,7 @@ def assign_difficulty(i):
         dif = 7
     return dif
 
+
 def insert_answers(results):
     mydb = mysql.connector.connect(
         host="localhost",
@@ -58,6 +67,7 @@ def insert_answers(results):
     mycursor = mydb.cursor()
     mycursor.execute("USE dailyAMC;")
     insert_query = 'INSERT INTO '
+
 
 def make_answers(last_img, mode):
     if mode == 0:
@@ -198,7 +208,7 @@ for i in range(25):
             # save_images(problem_statement)
             # problem_statement = save_images(problem_statement)
             answer = answers[i].contents[0]
-            insert_problem_statement(problem_statement, dif, new_url, results[answer])
+            insert_problem_statement(problem_statement, dif, new_url, results, answer)
             # save_statement(problem_statement)
             # answer = answers[i].contents[0]
             # save_answer(answer)
