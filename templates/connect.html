@@ -1,0 +1,16 @@
+
+{% block content %}
+  <h1>Problems for {{ date }}</h1>
+  {% if problems %}
+    <ul>
+    {% for problem in problems %}
+      <li>{{ problem | safe }}</li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>No problems for this date.</p>
+  {% endif %}
+
+  <!-- Include MathJax script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+{% endblock %}

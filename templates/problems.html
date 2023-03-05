@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Problems for {{ date }}</h1>
+  {% if problems %}
+
+      {% for problem in problems %}
+        <p class="tex2jax">{{ problem }}</p>
+      {% endfor %}
+
+  {% else %}
+    <p>No problems found for {{ date }}</p>
+  {% endif %}
+{% endblock %}

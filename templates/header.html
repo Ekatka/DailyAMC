@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+    <title>Mathedemo</title>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+
+
+
+    </script>
+    <script type="text/javascript"
+            src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <style>
+        h1 {
+            font-size: 50px;
+            font-family: Arial, serif;
+            text-align: left;
+            margin-left: 25px;
+            /*margin-bottom: 100px;*/
+        }
+
+        p {
+            text-align: left;
+            font-size: 30px;
+        }
+
+        /*div {text-align: center;}*/
+        .container {
+            width: 100%;
+            height: 100vh;
+
+        }
+
+        .toppane {
+            width: 100%;
+            height: 125px;
+            background-color: #50ABFF;
+
+
+        }
+
+
+        .leftpane {
+            width: 25%;
+            height: 200vh;
+            background-color: white;
+        }
+
+        .middlepane {
+            width: 50%;
+            height: 100vh;
+            background-color: white;
+        }
+
+
+        .rightpane {
+            width: 25%;
+            height: 100vh;
+            background-color: white;
+
+            flex-direction: row;
+            text-align: justify
+        }
+
+        body {
+            margin: 0 !important;
+        }
+
+        .d-flex {
+            display: flex;
+            text-align: justify;
+            align-content: space-between;
+            /*writing-mode: horizontal-tb;*/
+
+        }
+
+        .column {
+            width: 33.33%
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            background-color: #50ABFF;
+        }
+
+        .logo {
+            width: 25%;
+        }
+
+        .links {
+            width: 50%;
+            display: flex;
+            justify-content: flex-end;
+            margin-right: 25px;
+        }
+
+        .links a {
+            margin-left: 20px;
+            font-size: 30px;
+            text-decoration: none;
+            font-family: Arial;
+            color: black
+
+        }
+
+        .links a:visited {
+            text-decoration: none;
+            color: black;
+        }
+
+        input {
+            align-items: center;
+            color: black;
+            background-color: #50ABFF;
+            font-size: 30px;
+            border-radius: 25px;
+            border-color: #50ABFF;
+        }
+
+        div.form {
+            display: block;
+            text-align: center;
+        }
+
+        form {
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+
+        }
+
+    </style>
+
+</head>
+<header>
+    <div class="logo">
+        <h1> DailyAMC </h1>
+    </div>
+    <nav class="links">
+        <a href="#">Home</a>
+        <a href="#">Login</a>
+        <a href="#">About</a>
+
+    </nav>
+</header>
+
+<div class="container">
+
+    <div class="d-flex">
+        <div class="leftpane">
+        </div>
+        <div class="middlepane">
+
+            {% block content %}
+
+
+            {% for problem in problems %}
+            <p class="tex2jax">{{ problem }}</p>
+            {% endfor %}
+            {% endblock %}
+
+            <div class="form">
+                <form>
+                    <input style="width: 175px; height: 60px" type="submit" value="Submit">
+                </form>
+            </div>
+
+
+
+        </div>
+        <div class="rightpane">
+        </div>
+    </div>
+</div>
+
+<p class="tex2jax">{{ problem }}</p>
+</html>

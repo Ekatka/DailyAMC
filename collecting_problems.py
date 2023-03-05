@@ -58,15 +58,6 @@ def assign_difficulty(i):
     return dif
 
 
-def insert_answers(results):
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="ekatka",
-        password="password"
-    )
-    mycursor = mydb.cursor()
-    mycursor.execute("USE dailyAMC;")
-    insert_query = 'INSERT INTO '
 
 
 def make_answers(last_img, mode):
@@ -180,7 +171,8 @@ def save_answer(answer):
     link_file.close()
 '''
 
-year = 2020
+year = 2013
+
 
 base_url = f"https://artofproblemsolving.com/wiki/index.php/{year}_AMC_12A_Problems/Problem_1"
 answers_url = f"https://artofproblemsolving.com/wiki/index.php/{year}_AMC_12A_Answer_Key"
