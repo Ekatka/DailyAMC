@@ -25,6 +25,7 @@
 
 
 
+
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -189,9 +190,7 @@
             border: 2px solid black;
         }
 
-        input[type="radio"]:checked {
-            background-color: #50ABFF;
-        }
+
 
 
     </style>
@@ -225,27 +224,28 @@
                     <div class="button-container">
                         {% for solution in solutions %}
 
-                        <label class="button">
-                            <input type="radio" name="answer" value="{{ solution }}">
-                            ${{ solution }}$
+                        {% if solution == correct %}
+                        <label class="button" style="background-color: #20C34E;">
+                                {% else %}
+                                <label class="button">
+                                    {% endif %}
+                                    <input type="radio" name="answer" value="{{ solution }}">
+                                    ${{ solution }}$
+                                </label>
                         </label>
 
-                        {% endfor %}
+
+                                {% endfor %}
                     </div>
                     {% endblock %}
-                    <div style="text-align: center; margin-top: 30px">
-                        <input style="width: 175px; height: 60px; "
-                               type="submit" value="Submit">
-                    </div>
-                </form>
-            </div>
-            <br>
-            <br>
-            <div class="form">
-                <form>
 
                 </form>
+                <h1 style="color:#20C34E; margin-left: 0"> Correct</h1>
+                <a href="{{solution_link}}">You can find solution here</a>
             </div>
+            <br>
+            <br>
+
         </div>
 
 

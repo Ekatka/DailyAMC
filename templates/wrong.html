@@ -8,23 +8,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -189,10 +172,7 @@
             border: 2px solid black;
         }
 
-        input[type="radio"]:checked {
-            background-color: #50ABFF;
-        }
-
+      
 
     </style>
 
@@ -225,27 +205,28 @@
                     <div class="button-container">
                         {% for solution in solutions %}
 
-                        <label class="button">
-                            <input type="radio" name="answer" value="{{ solution }}">
-                            ${{ solution }}$
+                        {% if solution == correct %}
+                        <label class="button" style="background-color: #20C34E;">
+                            {% elif solution == answer %}
+                            <label class="button" style="background-color: red;">
+                                {% else %}
+                                <label class="button">
+                                    {% endif %}
+                                    <input type="radio" name="answer" value="{{ solution }}">
+                                    ${{ solution }}$
+                                </label>
+                            </label>
                         </label>
 
-                        {% endfor %}
-                    </div>
-                    {% endblock %}
-                    <div style="text-align: center; margin-top: 30px">
-                        <input style="width: 175px; height: 60px; "
-                               type="submit" value="Submit">
+                                {% endfor %}
                     </div>
                 </form>
+                <h1 style=" margin-left: 0"> <span style="color: red">Wrong! </span>  You can find solution <a href="{{solution_link}}">HERE</a></h1>
+                 {% endblock %}
             </div>
             <br>
             <br>
-            <div class="form">
-                <form>
 
-                </form>
-            </div>
         </div>
 
 
