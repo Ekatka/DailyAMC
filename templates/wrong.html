@@ -1,9 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-    <title>Mathedemo</title>
+    <title>DailyAMC</title>
+    <link rel="stylesheet" href="/templates/styles.css">
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+
 
 
 
@@ -13,168 +15,18 @@
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
     <style>
-        h1 {
-            font-size: 50px;
-            font-family: Arial, serif;
-            text-align: left;
-            margin-left: 25px;
-            /*margin-bottom: 100px;*/
-        }
-
-        p {
-            text-align: left;
-            font-size: 30px;
-        }
-
-        /*div {text-align: center;}*/
-        .container {
-            width: 100%;
-            height: 100vh;
-
-        }
-
-        .toppane {
-            width: 100%;
-            height: 125px;
-            background-color: #50ABFF;
-
-
-        }
-
-
-        .leftpane {
-            width: 25%;
-            height: 200vh;
-            background-color: white;
-        }
-
-        .middlepane {
-            width: 50%;
-            height: 100vh;
-            background-color: white;
-        }
-
-
-        .rightpane {
-            width: 25%;
-            height: 100vh;
-            background-color: white;
-
-            flex-direction: row;
-            text-align: justify
-        }
-
-        body {
-            margin: 0 !important;
-        }
-
-        .d-flex {
-            display: flex;
-            text-align: justify;
-            align-content: space-between;
-            /*writing-mode: horizontal-tb;*/
-
-        }
-
-        .column {
-            width: 33.33%
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 80px;
-            background-color: #50ABFF;
-        }
-
-        .logo {
-            width: 25%;
-        }
-
-        .links {
-            width: 50%;
-            display: flex;
-            justify-content: flex-end;
-            margin-right: 25px;
-        }
-
-        .links a {
-            margin-left: 20px;
-            font-size: 30px;
-            text-decoration: none;
-            font-family: Arial;
-            color: black
-
-        }
-
-        .links a:visited {
-            text-decoration: none;
-            color: black;
-        }
-
-        input {
-            align-items: center;
-            color: black;
-            background-color: #50ABFF;
-            font-size: 30px;
-            border-radius: 25px;
-            border-color: #50ABFF;
-        }
-
-        div.form {
-            display: block;
-            text-align: center;
-        }
-
-        form {
-            display: inline-block;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: left;
-
-        }
-
-        .button-container {
-            display: -webkit-flex;
-            display: flex;
-            -webkit-justify-content: space-between;
-            text-align: center;
-
-        }
-
-        .button {
-            width: fit-content;
-            background-color: white;
-            border-radius: 10px;
-            border: 3px black;
-            padding: 5px 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            text-align: center;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-
-        input[type="radio"] {
-            display: inline-block;
-            position: relative;
-            margin-right: 10px;
-            width: 20px;
-            height: 20px;
+        input[type="radio"]:checked {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
             background-color: white;
-            border: 2px solid black;
         }
 
-      
-
+        .button {
+            cursor: default;
+        }
     </style>
+
 
 </head>
 <header>
@@ -182,57 +34,69 @@
         <h1> DailyAMC </h1>
     </div>
     <nav class="links">
-        <a href="#">Home</a>
-        <a href="#">Login</a>
-        <a href="#">About</a>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/login">Login</a>
 
     </nav>
 </header>
 
 <div class="container">
 
-    <div class="d-flex">
-        <div class="leftpane">
-        </div>
-        <div class="middlepane">
-            <div class="form" style="text-align: center;">
-                <form method="POST" action="http://localhost:8000/submit-answer">
-                    {% block content %}
-                    {% for problem in problems %}
+    <div class="leftpane">
+    </div>
+    <div class="middlepane">
+        <div class="form" style="text-align: center;">
+            <form method="POST" action="http://localhost:8000/submit-answer">
+                {% block content %}
+                {% for problem in problems %}
 
-                    <p class="tex2jax">{{ problem }}</p>
-                    {% endfor %}
-                    <div class="button-container">
-                        {% for solution in solutions %}
+                <p class="tex2jax" style="text-align: left">{{ problem }}</p>
+                {% endfor %}
+                <div class="button-container">
+                    {% for solution in solutions %}
 
-                        {% if solution == correct %}
-                        <label class="button" style="background-color: #20C34E;">
-                            {% elif solution == answer %}
-                            <label class="button" style="background-color: red;">
-                                {% else %}
-                                <label class="button">
-                                    {% endif %}
-                                    <input type="radio" name="answer" value="{{ solution }}">
-                                    ${{ solution }}$
-                                </label>
+                    {% if solution == correct %}
+                    <label class="button" style="background-color: #20C34E;">
+                        {% elif solution == answer %}
+                        <label class="button" style="background-color: red;">
+                            {% else %}
+                            <label class="button">
+                                {% endif %}
+                                <input type="radio" name="answer" value="{{ solution }}">
+                                 <p style="margin-right: 30px">${{ solution }}$</p>
+
                             </label>
                         </label>
+                    </label>
 
-                                {% endfor %}
-                    </div>
-                </form>
-                <h1 style=" margin-left: 0"> <span style="color: red">Wrong! </span>  You can find solution <a href="{{solution_link}}">HERE</a></h1>
-                 {% endblock %}
-            </div>
-            <br>
-            <br>
+                    {% endfor %}
+                </div>
+            </form>
+            <h2 style="font-size: 35px; font-family: Arial,serif"><span style="color: red">Wrong! </span> You can
+                find possible solutions <a href="{{solution_link}}">HERE</a></h2>
+            {% if is_login == True %}
+            <h3 style="font-size: 20px; font-family: Arial,serif"> Streak : {{ streak }}</h3>
+            {% else %}
+            <h3 style="font-size: 20px; font-family: Arial,serif"> Do you want to keep track of your streak and other
+                statistics? You can <a href="/login"> sign up/login</a></h3>
+        <h3 style="font-size: 20px; font-family: Arial,serif"> Do you want to keep track of your streak and other
+            statistics? You can <a href="/login"> sign up/login</a></h3>
+             {% endif %}
+            {% endblock %}
 
         </div>
-
+        <div class="rightpane">
+        </div>
+        <br>
+        <br>
 
     </div>
-    <div class="rightpane">
-    </div>
+
+
+</div>
+<div class="rightpane">
+</div>
 </div>
 </div>
 

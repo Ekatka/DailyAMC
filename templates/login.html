@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<link rel="stylesheet" href="/templates/styles.css">
+<style type="text/css">
+    .container {
+
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+    }
+
+    .spaces {
+        flex-basis: 20%;
+    }
+
+    .form-container {
+        margin-top: 30px;
+        flex-basis: 30%;
+
+        /*border: 2px solid black;*/
+
+    }
+
+    .form_block {
+        margin-top: 30px;
+    }
+
+    label, input {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        align-items: flex-start;
+        font-size: 30px;
+        font-family: Arial;
+        margin-bottom: 10px;
+    }
+
+    input {
+        align-items: center;
+        color: black;
+        background-color: #50ABFF;
+        font-size: 30px;
+        border-radius: 5px;
+        border-color: #50ABFF;
+    }
+
+    input[type=checkbox] {
+        /* Double-sized Checkboxes */
+        -ms-transform: scale(2);
+        transform: scale(2);
+
+    }
+</style>
+<body>
+<header>
+    <div class="logo">
+        <h1> DailyAMC </h1>
+    </div>
+    <nav class="links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/login">Login</a>
+    </nav>
+</header>
+<div class="container">
+    <div class="spaces">
+
+    </div>
+    <div class="form-container">
+        <h2 style="margin-left: 0; font-family: Arial,serif; font-size: 40px"> Create new account</h2>
+        <form action="/signup" method="POST">
+            <div class="form_block" style="margin-top: 0px">
+                <label for="email">Email:</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <div class="form_block">
+                <label for="password">Password:</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <div class="form_block">
+                <label for="password_again"> Confirm password:</label>
+                <input type="password" name="password_again" required>
+            </div>
+            <div class="form_block">
+                <input type="submit" value="Signup">
+            </div>
+        </form>
+    </div>
+    <div class="form-container" style="margin-left: 30px">
+        <h2 style="margin-left: 0; font-family: Arial,serif; font-size: 40px"> Login</h2>
+        <form action="/login" method="POST">
+            <div class="form_block" style="margin-top: 0px">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="username" required>
+            </div>
+            <div class="form_block">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="form_block">
+                <label for="remember_me" style="flex-direction: row; ">
+                    <input type="checkbox" name="remember_me" id="remember_me"
+                           style="margin-right: 20px; margin-top: 10px">
+                    Remember me</label>
+            </div>
+            <div class="form_block" style="flex-direction: row">
+                <input type="submit" value="Login">
+            </div>
+        </form>
+    </div>
+    <div class="spaces">
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -10,7 +10,7 @@ def test_insert():
     mydb = mysql.connector.connect(
         host="localhost",
         user="ekatka",
-        password=""
+        password="password"
     )
     mycursor = mydb.cursor()
     mycursor.execute("USE dailyAMC;")

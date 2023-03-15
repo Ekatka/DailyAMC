@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/templates/styles.css">
+    <meta charset="UTF-8">
+    <title>DailyAMC</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        p {
+            text-align: left;
+            font-family: Arial, serif;
+            font-size: 30px;
+        }
+
+        .form {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <h1> DailyAMC </h1>
+    </div>
+    <nav class="links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/login">Login</a>
+    </nav>
+</header>
+<div class="container">
+    <div class="leftpane">
+    </div>
+    <div class="middlepane">
+
+
+        <p style="text-align: center"> You are logged in, do you want to log out?</p>
+        <div style="text-align: center">
+            <form method="POST" action="/logout" style="text-align: center">
+                <input style="width: 175px; height: 60px; text-align: center "
+                       type="submit" value="Logout">
+            </form>
+        </div>
+        <div class="rightpane">
+        </div>
+    </div>
+
+</body>
+</html>

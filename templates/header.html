@@ -1,25 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-    <title>Mathedemo</title>
+
+    <link rel="stylesheet" href="/templates/styles.css">
+    <title>DailyAMC</title>
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -29,172 +15,6 @@
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
-    <style>
-        h1 {
-            font-size: 50px;
-            font-family: Arial, serif;
-            text-align: left;
-            margin-left: 25px;
-            /*margin-bottom: 100px;*/
-        }
-
-        p {
-            text-align: left;
-            font-size: 30px;
-        }
-
-        /*div {text-align: center;}*/
-        .container {
-            width: 100%;
-            height: 100vh;
-
-        }
-
-        .toppane {
-            width: 100%;
-            height: 125px;
-            background-color: #50ABFF;
-
-
-        }
-
-
-        .leftpane {
-            width: 25%;
-            height: 200vh;
-            background-color: white;
-        }
-
-        .middlepane {
-            width: 50%;
-            height: 100vh;
-            background-color: white;
-        }
-
-
-        .rightpane {
-            width: 25%;
-            height: 100vh;
-            background-color: white;
-
-            flex-direction: row;
-            text-align: justify
-        }
-
-        body {
-            margin: 0 !important;
-        }
-
-        .d-flex {
-            display: flex;
-            text-align: justify;
-            align-content: space-between;
-            /*writing-mode: horizontal-tb;*/
-
-        }
-
-        .column {
-            width: 33.33%
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 80px;
-            background-color: #50ABFF;
-        }
-
-        .logo {
-            width: 25%;
-        }
-
-        .links {
-            width: 50%;
-            display: flex;
-            justify-content: flex-end;
-            margin-right: 25px;
-        }
-
-        .links a {
-            margin-left: 20px;
-            font-size: 30px;
-            text-decoration: none;
-            font-family: Arial;
-            color: black
-
-        }
-
-        .links a:visited {
-            text-decoration: none;
-            color: black;
-        }
-
-        input {
-            align-items: center;
-            color: black;
-            background-color: #50ABFF;
-            font-size: 30px;
-            border-radius: 25px;
-            border-color: #50ABFF;
-        }
-
-        div.form {
-            display: block;
-            text-align: center;
-        }
-
-        form {
-            display: inline-block;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: left;
-
-        }
-
-        .button-container {
-            display: -webkit-flex;
-            display: flex;
-            -webkit-justify-content: space-between;
-            text-align: center;
-
-        }
-
-        .button {
-            width: fit-content;
-            background-color: white;
-            border-radius: 10px;
-            border: 3px black;
-            padding: 5px 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            text-align: center;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-
-        input[type="radio"] {
-            display: inline-block;
-            position: relative;
-            margin-right: 10px;
-            width: 20px;
-            height: 20px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-color: white;
-            border: 2px solid black;
-        }
-
-        input[type="radio"]:checked {
-            background-color: #50ABFF;
-        }
-
-
-    </style>
 
 </head>
 <header>
@@ -202,58 +22,49 @@
         <h1> DailyAMC </h1>
     </div>
     <nav class="links">
-        <a href="#">Home</a>
-        <a href="#">Login</a>
-        <a href="#">About</a>
+        <a href="/">Home</a>
+
+        <a href="/about">About</a>
+        <a href="/login">Login</a>
 
     </nav>
 </header>
 
 <div class="container">
 
-    <div class="d-flex">
-        <div class="leftpane">
-        </div>
-        <div class="middlepane">
-            <div class="form" style="text-align: center;">
-                <form method="POST" action="http://localhost:8000/submit-answer">
-                    {% block content %}
-                    {% for problem in problems %}
 
-                    <p class="tex2jax">{{ problem }}</p>
+    <div class="leftpane">
+    </div>
+    <div class="middlepane">
+        <div class="form" style="text-align: center;">
+            <form method="POST" action="http://localhost:8000/submit-answer">
+                {% block content %}
+                {% for problem in problems %}
+
+                <p class="tex2jax" style="text-align: left">{{ problem }}</p>
+                {% endfor %}
+                <div class="button-container">
+                    {% for solution in solutions %}
+
+                    <label class="button">
+                        <input type="radio" name="answer" value="{{ solution }}">
+                        <p style="margin-right: 30px">${{ solution }}$</p>
+                    </label>
+
                     {% endfor %}
-                    <div class="button-container">
-                        {% for solution in solutions %}
-
-                        <label class="button">
-                            <input type="radio" name="answer" value="{{ solution }}">
-                            ${{ solution }}$
-                        </label>
-
-                        {% endfor %}
-                    </div>
-                    {% endblock %}
-                    <div style="text-align: center; margin-top: 30px">
-                        <input style="width: 175px; height: 60px; "
-                               type="submit" value="Submit">
-                    </div>
-                </form>
-            </div>
-            <br>
-            <br>
-            <div class="form">
-                <form>
-
-                </form>
-            </div>
+                </div>
+                {% endblock %}
+                <div style="text-align: center; margin-top: 30px">
+                    <input style="width: 175px; height: 60px; "
+                           type="submit" value="Submit">
+                </div>
+            </form>
         </div>
-
-
     </div>
     <div class="rightpane">
+        <p style="text-align: right; margin-right: 20px">{{ user }}</p>
     </div>
-</div>
-</div>
 
+</div>
 
 </html>
