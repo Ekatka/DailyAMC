@@ -15,13 +15,22 @@ from jose import JWTError, jwt
 from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 from pydantic import Field, BaseModel
+import os
 
-connection = pymysql.connect(
-    host='localhost',
-    user='ekatka',
-    password='password',
-    db='dailyAMC'
+# connection = pymysql.connect(
+#     host='localhost',
+#     user='ekatka',
+#     password='password',
+#     db='dailyAMC',
+#     port=3307
+# )
+connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
+                             port=3306,
+                             user=os.environ.get("DATABASE_USERNAME"),
+                             password=os.environ.get("DATABASE_PASSWORD"),
+                             database=os.environ.get("DATABASE"),
 )
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
 SECRET_KEY = "0b407c2a4e151a402de0fe3f7cf77a91fa4da352f5ffcf547539632c26dec88e"

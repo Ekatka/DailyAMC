@@ -2,7 +2,6 @@ version: '3'
 services:
   mysql:
     container_name: mysql
-    platform: linux/x86_64
     build: ./mysql/
     ports:
       - "3306:3306"
@@ -10,23 +9,29 @@ services:
       - ./mysql/db:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=archmage
-      - MYSQL_DATABASE=fastapi_app
+      - MYSQL_DATABASE=dailyAMC
     tty: true
-  api:
+  app:
+    command: bash -c "sleep 5 && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+
     depends_on:
       - mysql
+#    depends_on:
+#      rabbit:
+#        condition: service_healthy
     container_name: fast_api
-    platform: linux/x86_64
-    build: ./api
+
+    #command: wait-for-mysql.sh mysql "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+    build: ./app
     restart: always
     tty: true
     volumes:
-      - ./api:/app
+      - ./app:/app
     ports:
       - 8000:8000
     environment:
       - APP_SECRET_STRING=archmage
       - DATABASE_USERNAME=root
       - DATABASE_PASSWORD=archmage
-      - DATABASE=fastapi_app
+      - DATABASE=dailyAMC
       - DATABASE_HOST=mysql
