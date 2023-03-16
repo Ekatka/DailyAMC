@@ -129,7 +129,8 @@ async def get_current_user(request: Request):
 
 def get_streak(user_id):
     cursor.execute(
-        "SELECT Answers.is_correct, Assignments.problem_date FROM Answers INNER JOIN Assignments ON Answers.assigment_id=Assignments.problem_id WHERE Answers.user_id = %s ORDER BY Assignments.problem_date ASC",(user_id))
+        "SELECT Answers.is_correct, Assignments.problem_date FROM Answers INNER JOIN Assignments ON Answers.assigment_id=Assignments.problem_id WHERE Answers.user_id = %s ORDER BY Assignments.problem_date ASC",
+        (user_id))
     results = cursor.fetchall()
 
     streak = 0
@@ -198,6 +199,10 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
     correct_answer = 'SELECT  solution_text FROM Solutions WHERE  problem_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s) AND is_answer = "1"'
     cursor.execute(correctnes_query, (date, answer))
     is_right = cursor.fetchone()[0]
+    if is_right:
+        streak = 1
+    else:
+        streak = 0
     # print(is_right, correct)
     cursor.execute(correct_answer, (date))
     correct = cursor.fetchone()[0]
@@ -209,7 +214,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         print(user)
         get_user_id = 'SELECT id FROM Users WHERE email = %s'
         get_problem_id = 'SELECT problem_id FROM Assignments WHERE problem_date = %s'
-        save_query = 'INSERT INTO Answers (user_id, assigment_id, is_correct) VALUES (%s,%s,%s)'
+        save_query = 'INSERT INTO Answers (user_id, assigment_id, is_correct, user_answer) VALUES (%s,%s,%s, %s)'
 
         cursor.execute(get_user_id, (user))
         user_id = cursor.fetchone()[0]
@@ -217,7 +222,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         cursor.execute(get_problem_id, (date))
         problem_id = cursor.fetchone()[0]
         print((type(user_id), type(problem_id), type(is_right)))
-        values = ((user_id, problem_id, is_right))
+        values = ((user_id, problem_id, is_right, answer))
         cursor.execute(save_query, values)
         connection.commit()
 
@@ -230,17 +235,19 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         is_login = False
 
     if is_right == 1:
+
         response = templates.TemplateResponse("correct.html",
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
-                                               "is_login": is_login, "streak": streak})
+                                               "is_login": is_login, "streak": streak, "True": True})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
+
         response = templates.TemplateResponse("wrong.html",
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
-                                               "is_login": is_login, "streak": streak})
+                                               "is_login": is_login, "streak": streak, "True": True})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -291,8 +298,53 @@ def get_solutions(date):
     results = cursor.fetchall()
     return [row[0] for row in results]
 
+
 def already_answered(current_user):
-    pass
+    date = datetime.today().strftime('%Y-%m-%d')
+    get_user_id = 'SELECT id FROM Users WHERE email = %s'
+    cursor.execute(get_user_id, (current_user))
+    user_id = cursor.fetchone()[0]
+    answered = 'SELECT * FROM Answers INNER JOIN Assignments ON Answers.assigment_id = Assignments.problem_id WHERE Assignments.problem_date = %s AND Answers.user_id = %s'
+    cursor.execute(answered, (date, user_id))
+    if len(cursor.fetchall()) > 0:
+        return True
+    else:
+        return False
+
+
+@app.get('/submit-answer')
+async def get_answer(response: Response, request: Request,
+                     current_user: Optional[str] = Depends(get_current_user)):
+    date = datetime.today().strftime('%Y-%m-%d')
+    correct_answer = 'SELECT  solution_text FROM Solutions WHERE  problem_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s) AND is_answer = "1"'
+    user_answer_correct = 'SELECT is_correct, user_answer FROM Answers WHERE assigment_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s)'
+    cursor.execute(user_answer_correct, (date))
+    is_right = cursor.fetchone()[0]
+    answer = cursor.fetchone()[1]
+    cursor.execute(correct_answer, (date))
+    correct = cursor.fetchone()[0]
+    solutions = get_solutions(date)
+    problems = get_problems(date)
+    link_to_solution = get_solution_link()
+    is_login = True
+    # streak = get_streak(user_id)
+
+    if is_right == 1:
+        response = templates.TemplateResponse("correct.html",
+                                              {"request": request, "problems": problems, "solutions": solutions,
+                                               "correct": correct, "solution_link": link_to_solution,
+                                               "is_login": is_login})
+        # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
+        return response
+    else:
+        response = templates.TemplateResponse("wrong.html",
+                                              {"request": request, "problems": problems, "solutions": solutions,
+                                               "correct": correct, "answer": answer, "solution_link": link_to_solution,
+                                               "is_login": is_login})
+        # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
+        return response
+
+
 @app.get("/")
 def problems(response: Response, request: Request, current_user: Optional[str] = Depends(get_current_user)):
     # if "is_right" in request.cookies:
@@ -300,6 +352,11 @@ def problems(response: Response, request: Request, current_user: Optional[str] =
     #     return redirect
     if current_user:
         already_answer = already_answered(current_user)
+        if already_answer:
+            # response.headers["Location"] = "/submit-answer"
+            # response.status_code = 302
+            response = RedirectResponse("/submit-answer", status_code=status.HTTP_303_SEE_OTHER)
+            return response
 
     date = datetime.today().strftime('%Y-%m-%d')
     # date = datetime.strptime(date, '%Y-%m-%d')
@@ -342,5 +399,6 @@ def shutdown_event():
     cursor.close()
     connection.close()
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

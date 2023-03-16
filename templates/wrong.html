@@ -76,12 +76,10 @@
             <h2 style="font-size: 35px; font-family: Arial,serif"><span style="color: red">Wrong! </span> You can
                 find possible solutions <a href="{{solution_link}}">HERE</a></h2>
             {% if is_login == True %}
-            <h3 style="font-size: 20px; font-family: Arial,serif"> Streak : {{ streak }}</h3>
-            {% else %}
-            <h3 style="font-size: 20px; font-family: Arial,serif"> Do you want to keep track of your streak and other
+                <h3 style="font-size: 20px; font-family: Arial,serif"> Streak : {{ streak }}</h3>
+                    {% else %}
+                        <h3 style="font-size: 20px; font-family: Arial,serif"> Do you want to keep track of your streak and other
                 statistics? You can <a href="/login"> sign up/login</a></h3>
-        <h3 style="font-size: 20px; font-family: Arial,serif"> Do you want to keep track of your streak and other
-            statistics? You can <a href="/login"> sign up/login</a></h3>
              {% endif %}
             {% endblock %}
 
