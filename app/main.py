@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Union
 import pytz
@@ -14,22 +15,22 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
-from pydantic import Field, BaseModel
+from pydantic import BaseModel
 import os
 
-# connection = pymysql.connect(
-#     host='localhost',
-#     user='ekatka',
-#     password='password',
-#     db='dailyAMC',
-#     port=3307
-# )
-connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
-                             port=3306,
-                             user=os.environ.get("DATABASE_USERNAME"),
-                             password=os.environ.get("DATABASE_PASSWORD"),
-                             database=os.environ.get("DATABASE"),
+connection = pymysql.connect(
+    host='localhost',
+    user='ekatka',
+    password='password',
+    db='dailyAMC',
+    port=3306
 )
+# connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
+#                              port=3306,
+#                              user=os.environ.get("DATABASE_USERNAME"),
+#                              password=os.environ.get("DATABASE_PASSWORD"),
+#                              database=os.environ.get("DATABASE"),
+# )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
@@ -48,7 +49,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class ExtendedOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):
-    remember_me: bool = Field(default=False, alias="remember_me")
+    remember_me: bool
 
 
 class Token(BaseModel):
@@ -168,11 +169,13 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 
 @app.post("/login")
-async def login(response: Response, form_data: ExtendedOAuth2PasswordRequestForm = Depends()):
+async def login(response: Response, form_data: ExtendedOAuth2PasswordRequestForm = Depends(), remember_me=Form(None) ):
     email = form_data.username
     password = form_data.password
-    remember_me = form_data.remember_me
-    if remember_me == True:
+
+    logging.debug(f"User tries to login {email}")
+
+    if remember_me == 'true':
         access_token_expires = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     else:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -218,6 +221,8 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
     solutions = get_solutions(date)
     problems = get_problems(date)
     link_to_solution = get_solution_link()
+    total = None
+    stats_by_day = None
     if current_user:
         user = current_user
         print(user)
@@ -239,6 +244,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         expire_time = expire_time.strftime("%Y-%m-%d %H:%M:%S")
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         streak = get_streak(user_id)
+        total, stats_by_day = get_statistics(user_id)
         is_login = True
     else:
         is_login = False
@@ -248,7 +254,8 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         response = templates.TemplateResponse("correct.html",
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
-                                               "is_login": is_login, "streak": streak, "True": True})
+                                               "is_login": is_login, "streak": streak, "True": True,
+                                               "total_answer": total, "stats_by_day": stats_by_day})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -256,7 +263,8 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         response = templates.TemplateResponse("wrong.html",
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
-                                               "is_login": is_login, "streak": streak, "True": True})
+                                               "is_login": is_login, "streak": streak, "True": True,
+                                               "total_answer": total, "stats_by_day": stats_by_day})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -308,11 +316,16 @@ def get_solutions(date):
     return [row[0] for row in results]
 
 
+def get_user_id(current_user):
+    id_query = 'SELECT id FROM Users WHERE email = %s'
+    cursor.execute(id_query, (current_user))
+    user_id = cursor.fetchone()[0]
+    return user_id
+
+
 def already_answered(current_user):
     date = datetime.today().strftime('%Y-%m-%d')
-    get_user_id = 'SELECT id FROM Users WHERE email = %s'
-    cursor.execute(get_user_id, (current_user))
-    user_id = cursor.fetchone()[0]
+    user_id = get_user_id(current_user)
     answered = 'SELECT * FROM Answers INNER JOIN Assignments ON Answers.assigment_id = Assignments.problem_id WHERE Assignments.problem_date = %s AND Answers.user_id = %s'
     cursor.execute(answered, (date, user_id))
     if len(cursor.fetchall()) > 0:
@@ -321,35 +334,59 @@ def already_answered(current_user):
         return False
 
 
+def get_statistics(user_id):
+    stats_by_day = {"Monday": {"correct": 0}, "Tuesday": {"correct": 0}, "Wednesday": {"correct": 0},
+                    "Thursday": {"correct": 0}, "Friday": {"correct": 0}, "Saturday": {"correct": 0},
+                    "Sunday": {"correct": 0}}
+    total_correct = 0
+
+    # Get the user's answers for all time
+
+    sql = "SELECT a.is_correct, DAYNAME(s.problem_date) FROM Answers a JOIN Assignments s ON a.assigment_id = s.problem_id WHERE a.user_id = %s"
+    cursor.execute(sql, (user_id))
+    results = cursor.fetchall()
+
+    # Update the statistics by weekday
+    for result in results:
+        if result[0] == 1:
+            stats_by_day[result[1]]["correct"] += 1
+            total_correct += 1
+    return total_correct, stats_by_day
+
+
 @app.get('/submit-answer')
 async def get_answer(response: Response, request: Request,
                      current_user: Optional[str] = Depends(get_current_user)):
     date = datetime.today().strftime('%Y-%m-%d')
+    user_id = get_user_id(current_user)
     correct_answer = 'SELECT  solution_text FROM Solutions WHERE  problem_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s) AND is_answer = "1"'
-    user_answer_correct = 'SELECT is_correct, user_answer FROM Answers WHERE assigment_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s)'
-    cursor.execute(user_answer_correct, (date))
-    is_right = cursor.fetchone()[0]
-    answer = cursor.fetchone()[1]
+    user_answer_correct = 'SELECT is_correct, user_answer FROM Answers WHERE assigment_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s) AND user_id = %s'
+    cursor.execute(user_answer_correct, (date, user_id))
+    is_right, answer = cursor.fetchone()
+    # answer = cursor.fetchone()[1]
     cursor.execute(correct_answer, (date))
     correct = cursor.fetchone()[0]
     solutions = get_solutions(date)
     problems = get_problems(date)
     link_to_solution = get_solution_link()
     is_login = True
-    # streak = get_streak(user_id)
+    streak = get_streak(user_id)
+    total, stats_by_day = get_statistics(user_id)
 
     if is_right == 1:
         response = templates.TemplateResponse("correct.html",
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
-                                               "is_login": is_login})
+                                               "is_login": is_login, "streak": streak, "True": True,
+                                               "total_answers": total, "stats_by_day": stats_by_day})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
         response = templates.TemplateResponse("wrong.html",
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
-                                               "is_login": is_login})
+                                               "is_login": is_login, "streak": streak, "True": True,
+                                               "total_answers": total, "stats_by_day": stats_by_day})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
