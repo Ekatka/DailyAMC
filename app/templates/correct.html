@@ -34,6 +34,9 @@
         .button {
             cursor: default;
         }
+        p{
+            font-size: 2em;
+        }
 
         footer {
             position: absolute;
@@ -52,7 +55,7 @@
         }
 
         header {
-            height: 10vh;
+            height: 5vh;
         }
     </style>
 
@@ -82,18 +85,18 @@
                 {% block content %}
                 {% for problem in problems %}
 
-                <p class="tex2jax" style="text-align: left">{{ problem }}</p>
+                <p class="tex2jax" style="text-align: left; font-size: 3em">{{ problem }}</p>
                 {% endfor %}
                 <div class="button-container">
                     {% for solution in solutions %}
 
                     {% if solution == correct %}
-                    <label class="button" style="background-color: #20C34E;">
+                    <label class="button" style="background-color: #20C34E; height: 3em; padding: 1em">
                         {% else %}
-                        <label class="button">
+                        <label class="button" style="height: 3.5em; padding: 1em">
                             {% endif %}
-                            <input type="radio" name="answer" value="{{ solution }}">
-                            ${{ solution }}$
+                            <input type="radio" name="answer" value="{{ solution }}" style="font-size: 2em; ">
+                            <p style="font-size: 2.5em">${{ solution }}$</p>
                         </label>
                     </label>
 
@@ -103,10 +106,10 @@
 
 
             </form>
-            <h2 style="font-size: 35px; font-family: Arial,serif"><span style="color: #20C34E">Correct! </span> You can
+            <h2 style="font-size: 4em; font-family: Arial,serif"><span style="color: #20C34E">Correct! </span> You can
                 find possible solutions <a href="{{solution_link}}">HERE</a></h2>
             {% if is_login == True %}
-            <h3 style="font-size: 20px; font-family: Arial,serif"> Streak : {{ streak }}</h3>
+            <h3 style="font-size: 2em; font-family: Arial,serif"> Streak : {{ streak }}</h3>
             <h1> Statistics</h1>
             <p>Total correct answers: {{ total_answers }}</p>
             <table>
@@ -122,7 +125,7 @@
                 {% endfor %}
             </table>
             {% else %}
-            <h3 style="font-size: 20px; font-family: Arial,serif"> Do you want to keep track of your streak and other
+            <h3 style="font-size: 2em; font-family: Arial,serif"> Do you want to keep track of your streak and other
                 statistics? You can <a href="/login"> sign up/login</a></h3>
             {% endif %}
             {% endblock %}

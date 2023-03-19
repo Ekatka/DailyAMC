@@ -18,8 +18,9 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 import socket
 import os
+
 #
-if socket.gethostname()=='myXPS':
+if socket.gethostname() == 'myXPS':
     connection = pymysql.connect(
         host='localhost',
         user='ekatka',
@@ -33,7 +34,7 @@ else:
                                  user=os.environ.get("DATABASE_USERNAME"),
                                  password=os.environ.get("DATABASE_PASSWORD"),
                                  database=os.environ.get("DATABASE"),
-    )
+                                 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
@@ -172,7 +173,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 
 @app.post("/login")
-async def login(response: Response, form_data: ExtendedOAuth2PasswordRequestForm = Depends(), remember_me=Form(None) ):
+async def login(response: Response, form_data: ExtendedOAuth2PasswordRequestForm = Depends(), remember_me=Form(None)):
     email = form_data.username
     password = form_data.password
 
@@ -305,6 +306,11 @@ def get_problems(date):
         'WHERE id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s)',
         date
     )
+    # cursor.execute(
+    #     'SELECT statement FROM Problems '
+    #     'WHERE id = 143',
+    #     date
+    # )
 
     results = cursor.fetchall()
 

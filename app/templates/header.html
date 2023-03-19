@@ -18,7 +18,7 @@
     </script>
     <style type="text/css">
         header{
-            height: 10vh;
+            height: 5em;
         }
         html, body {
             margin: 0;
@@ -31,13 +31,14 @@
             text-align: center;
             bottom: 0;
             width: 100%;
-            height: 100px; /* Height of the footer */
+            height: 60px; /* Height of the footer */
             padding: 20px;
 
         }
 
-        .content {
-            margin-bottom: 150px; /* Add a margin to create space for the footer */
+        .links a {
+            font-size: 2.5em;
+            margin-left: 1em;
         }
 
 
@@ -47,9 +48,6 @@
                 scroll-padding-top: 400px;
 
             }
-
-
-
 
             /* Set the height of the footer */
             .links {
@@ -106,32 +104,26 @@
                 {% block content %}
                 {% for problem in problems %}
 
-                <p class="tex2jax" style="text-align: left">{{ problem }}</p>
+                <p class="tex2jax" style="text-align: left; font-size: 2.5em">{{ problem }}</p>
                 {% endfor %}
                 <div class="button-container">
                     {% for solution in solutions %}
 
                     <label class="button">
-                        <input type="radio" name="answer" value="{{ solution }}">
-                        <p style="margin-right: 30px">${{ solution }}$</p>
+                        <input type="radio" name="answer" value="{{ solution }}" style="font-size: 3em">
+                        <p style="margin-right: 1em; font-size: 3em">${{ solution }}$</p>
                     </label>
 
                     {% endfor %}
                 </div>
                 {% endblock %}
                 <div style="text-align: center; margin-top: 30px">
-                    <input style="width: 175px; height: 60px; "
+                    <input style="width: 5em; height: 2em; font-size: 3em "
                            type="submit" value="Submit">
                 </div>
             </form>
         </div>
-        <p style="text-align: center; font-family: Arial">The problems on this page are copyrighted by the <a
-                rel="nofollow"
-                class="external text"
-                href="http://www.maa.org">Mathematical
-            Association of America</a>'s <a rel="nofollow" class="external text" href="http://amc.maa.org">American
-            Mathematics Competitions</a>
-        </p>
+
 
     </div>
     <div class="rightpane">
@@ -139,6 +131,17 @@
     </div>
 
 </div>
+
+<footer>
+    <p style="text-align: center; font-family: Arial">The problems on this page are copyrighted by the <a
+            rel="nofollow"
+            class="external text"
+            href="http://www.maa.org">Mathematical
+        Association of America</a>'s <a rel="nofollow" class="external text" href="http://amc.maa.org">American
+        Mathematics Competitions</a>
+    </p>
+
+</footer>
 
 
 
