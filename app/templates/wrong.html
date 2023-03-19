@@ -5,14 +5,6 @@
     <link rel="stylesheet" href="/templates/styles.css">
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-
-
-
-
-
-
-
-
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -66,7 +58,7 @@
     </div>
     <div class="middlepane">
         <div class="form" style="text-align: center;">
-            <form method="POST" action="http://localhost:8000/submit-answer">
+            <form method="POST" action="/submit-answer">
                 {% block content %}
                 {% for problem in problems %}
 

@@ -12,7 +12,7 @@ services:
       - MYSQL_DATABASE=dailyAMC
     tty: true
   app:
-    command: bash -c "sleep 20 && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+#    command: bash -c "sleep 20 && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
 
     depends_on:
       - mysql
@@ -21,7 +21,7 @@ services:
 #        condition: service_healthy
     container_name: fast_api
 
-#    command: wait-for-mysql.sh mysql "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+    command: /app/wait-for-mysql.sh mysql "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
     build: ./app
     restart: always
     tty: true
