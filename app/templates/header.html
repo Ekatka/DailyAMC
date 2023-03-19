@@ -6,20 +6,23 @@
     <title>DailyAMC</title>
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-
-
-
-
-
-
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
     <style type="text/css">
-        header{
+        header {
+            display: flex;
             height: 7em;
+            width: 100%;
+
+
+            justify-content: space-between;
+            align-items: center;
+
+            background-color: #50ABFF;
         }
+
         html, body {
             margin: 0;
             height: 100%;
@@ -31,49 +34,11 @@
             text-align: center;
             bottom: 0;
             width: 100%;
-            height: 60px; /* Height of the footer */
+            height: 5em; /* Height of the footer */
             padding: 20px;
 
         }
 
-        /*.links a {*/
-        /*    font-size: 2.5em;*/
-        /*    margin-left: 1em;*/
-        /*}*/
-
-
-        @media screen and (max-width: 800px) {
-            body {
-                overflow-y: scroll;
-                scroll-padding-top: 400px;
-
-            }
-
-            /* Set the height of the footer */
-            .links {
-                justify-content: flex-end;
-            }
-
-
-            .links button {
-                font-size: 20px;
-                text-decoration: none;
-                font-family: Arial, serif;
-                color: black;
-                border: none;
-                background-color: transparent;
-                cursor: pointer;
-            }
-
-            .links button:after {
-                content: "\f0c9";
-                font-family: FontAwesome, serif;
-                font-size: 30px;
-                margin-left: 10px;
-            }
-
-
-        }
 
 
     </style>
@@ -83,14 +48,11 @@
     <div class="logo">
         <h1> DailyAMC </h1>
     </div>
-    <div class="links">
+    <nav class="links">
         <a href="/">Home</a>
         <a href="/about">About</a>
         <a href="/login">Login</a>
-
-    </div>
-
-
+    </nav>
 </header>
 
 <div class="container">
@@ -99,12 +61,12 @@
     <div class="leftpane">
     </div>
     <div class="middlepane">
-        <div class="form" style="text-align: center;">
+        <div class="form" style=" text-align: center">
             <form method="POST" action="/submit-answer">
                 {% block content %}
                 {% for problem in problems %}
 
-                <p class="tex2jax" style="text-align: left; font-size: 2.5em">{{ problem }}</p>
+                <p class="tex2jax" style=" text-align: left; font-size: 2.5em ">{{ problem }}</p>
                 {% endfor %}
                 <div class="button-container">
                     {% for solution in solutions %}
@@ -142,7 +104,6 @@
     </p>
 
 </footer>
-
 
 
 </html>
