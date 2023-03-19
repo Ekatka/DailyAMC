@@ -18,7 +18,7 @@
     </script>
     <style type="text/css">
         header{
-            height: 5em;
+            height: 7em;
         }
         html, body {
             margin: 0;
@@ -36,10 +36,10 @@
 
         }
 
-        .links a {
-            font-size: 2.5em;
-            margin-left: 1em;
-        }
+        /*.links a {*/
+        /*    font-size: 2.5em;*/
+        /*    margin-left: 1em;*/
+        /*}*/
 
 
         @media screen and (max-width: 800px) {
@@ -110,7 +110,7 @@
                     {% for solution in solutions %}
 
                     <label class="button">
-                        <input type="radio" name="answer" value="{{ solution }}" style="font-size: 3em">
+                        <input type="radio" name="answer" value="{{ solution }}">
                         <p style="margin-right: 1em; font-size: 3em">${{ solution }}$</p>
                     </label>
 
