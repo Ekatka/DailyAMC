@@ -16,21 +16,24 @@ from jose import JWTError, jwt
 from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 from pydantic import BaseModel
+import socket
 import os
 #
-connection = pymysql.connect(
-    host='localhost',
-    user='ekatka',
-    password='password',
-    db='dailyAMC',
-    port=3306
-)
-# connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
-#                              port=3306,
-#                              user=os.environ.get("DATABASE_USERNAME"),
-#                              password=os.environ.get("DATABASE_PASSWORD"),
-#                              database=os.environ.get("DATABASE"),
-# )
+if socket.gethostname()=='myXPS':
+    connection = pymysql.connect(
+        host='localhost',
+        user='ekatka',
+        password='password',
+        db='dailyAMC',
+        port=3306
+    )
+else:
+    connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
+                                 port=3306,
+                                 user=os.environ.get("DATABASE_USERNAME"),
+                                 password=os.environ.get("DATABASE_PASSWORD"),
+                                 database=os.environ.get("DATABASE"),
+    )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
