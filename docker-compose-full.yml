@@ -11,6 +11,8 @@ services:
       - MYSQL_ROOT_PASSWORD=archmage
       - MYSQL_DATABASE=dailyAMC
     tty: true
+    networks:
+      - appnet
   app:
     depends_on:
       - mysql
@@ -21,11 +23,8 @@ services:
     tty: true
     volumes:
       - ./app:/app
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
     ports:
-      - 80:80
-      - 443:443
+      - 8000:8000
     environment:
       - APP_SECRET_STRING=archmage
       - DATABASE_USERNAME=root
@@ -33,34 +32,24 @@ services:
       - DATABASE=dailyAMC
       - DATABASE_HOST=mysql
     networks:
-      - my-network
-
+      - appnet
   nginx:
-    image: nginx:latest
     container_name: nginx
-    volumes:
-      - ./nginx/conf:/etc/nginx/conf.d
-      - ./certbot/www:/var/www/certbot
+    image: nginx:latest
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
     depends_on:
       - app
-    restart: always
     networks:
-      - my-network
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    depends_on:
-      - nginx
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot certonly --webroot --webroot-path=/var/www/certbot --email your.email@example.com --agree-tos -d yourdomain.com -d www.yourdomain.com; sleep 12h & wait $${!}; done;'"
-
-
+      - appnet
+    command: "/bin/bash -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 networks:
-  my-network:
-    external: true
+  appnet:
+volumes:
+  certbot:
+  letsencrypt:
