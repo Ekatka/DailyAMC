@@ -45,9 +45,21 @@ services:
       - certbot:/var/www/certbot
     depends_on:
       - app
+      - certbot
     networks:
       - appnet
     command: "/bin/bash -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    container_name: certbot
+    image: certbot/certbot
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
+    depends_on:
+      - nginx
+    command: certonly --webroot --webroot-path=/var/www/certbot --email your-email@example.com --agree-tos --no-eff-email -d dailyamc.xyz
+    networks:
+      - appnet
 networks:
   appnet:
 volumes:
