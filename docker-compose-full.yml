@@ -33,26 +33,26 @@ services:
       - DATABASE_HOST=mysql
     networks:
       - appnet
-  certbot:
-    container_name: certbot
-    image: certbot/certbot:v1.22.0
-    command: certonly --webroot --webroot-path=/var/www/certbot --email katyadanilina@gmail.com --agree-tos --no-eff-email -d dailyamc.xyz -d www.dailyamc.xyz
-    volumes:
-      - certbot:/etc/letsencrypt
-      - ./nginx/certbot_webroot:/var/www/certbot
-    depends_on:
-      - nginx
-    networks:
-      - appnet
+#  certbot:
+#    container_name: certbot
+#    image: certbot/certbot:v1.22.0
+#    command: certonly --webroot --webroot-path=/var/www/certbot --email katyadanilina@gmail.com --agree-tos --no-eff-email -d dailyamc.xyz -d www.dailyamc.xyz
+#    volumes:
+#      - certbot:/etc/letsencrypt
+#      - ./nginx/certbot_webroot:/var/www/certbot
+#    depends_on:
+#      - nginx
+#    networks:
+#      - appnet
   nginx:
     container_name: nginx
     image: nginx:latest
     ports:
       - "80:80"
-      - "443:443"
+#      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - letsencrypt:/etc/letsencrypt
+#      - letsencrypt:/etc/letsencrypt
     depends_on:
       - app
     networks:
@@ -62,4 +62,4 @@ networks:
   appnet:
 volumes:
   certbot:
-  letsencrypt:
+#  letsencrypt:
