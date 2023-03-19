@@ -36,7 +36,7 @@ services:
   certbot:
     container_name: certbot
     image: certbot/certbot:v1.22.0
-    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@example.com --agree-tos --no-eff-email -d example.com -d www.example.com
+    command: certonly --webroot --webroot-path=/var/www/certbot --email katya.danilina@gmail.com --agree-tos --no-eff-email -d dailyamc.xyz -d www.dailyamc.xyz
     volumes:
       - certbot:/etc/letsencrypt
       - ./nginx/certbot_webroot:/var/www/certbot
