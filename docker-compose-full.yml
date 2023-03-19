@@ -33,6 +33,17 @@ services:
       - DATABASE_HOST=mysql
     networks:
       - appnet
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:v1.22.0
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@example.com --agree-tos --no-eff-email -d example.com -d www.example.com
+    volumes:
+      - certbot:/etc/letsencrypt
+      - ./nginx/certbot_webroot:/var/www/certbot
+    depends_on:
+      - nginx
+    networks:
+      - appnet
   nginx:
     container_name: nginx
     image: nginx:latest
@@ -42,24 +53,11 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
     depends_on:
       - app
-      - certbot
     networks:
       - appnet
-    command: "/bin/bash -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  certbot:
-    container_name: certbot
-    image: certbot/certbot
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
-    depends_on:
-      - nginx
-    command: certonly --webroot --webroot-path=/var/www/certbot --email your-email@example.com --agree-tos --no-eff-email -d dailyamc.xyz
-    networks:
-      - appnet
+    command: "/bin/bash -c 'nginx -t && nginx -s reload && nginx -g \"daemon off;\"'"
 networks:
   appnet:
 volumes:
