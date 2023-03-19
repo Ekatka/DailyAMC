@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3'
 services:
   mysql:
     container_name: mysql
@@ -13,6 +13,7 @@ services:
     tty: true
     networks:
       - appnet
+
   app:
     depends_on:
       - mysql
@@ -23,6 +24,8 @@ services:
     tty: true
     volumes:
       - ./app:/app
+    ports:
+      - 8000:8000
     environment:
       - APP_SECRET_STRING=archmage
       - DATABASE_USERNAME=root
@@ -31,28 +34,21 @@ services:
       - DATABASE_HOST=mysql
     networks:
       - appnet
+
   nginx:
     container_name: nginx
-    image: nginx:latest
+    build: ./nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     depends_on:
       - app
     networks:
       - appnet
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    depends_on:
-      - nginx
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 networks:
   appnet:
