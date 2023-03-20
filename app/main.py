@@ -173,7 +173,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 
 @app.post("/login")
-async def login(response: Response, form_data: ExtendedOAuth2PasswordRequestForm = Depends(), remember_me=Form(None)):
+async def login(request: Request, form_data: ExtendedOAuth2PasswordRequestForm = Depends(), remember_me=Form(None)):
     email = form_data.username
     password = form_data.password
 
@@ -189,7 +189,9 @@ async def login(response: Response, form_data: ExtendedOAuth2PasswordRequestForm
 
     user_dict = authenticate_user(email, password)
     if not user_dict:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        error_message = "Incorrect username or password"
+        return templates.TemplateResponse("login.html", {"request": request, "message_login": error_message})
+        # raise HTTPException(status_code=400, detail="Incorrect username or password")
     access_token = create_access_token(
         data={"sub": user_dict.email}, expires_delta=access_token_expires
     )
@@ -284,9 +286,13 @@ def create_user(email, password):
 async def sign_up(response: Response, request: Request, email: str = Form(...), password=Form(...),
                   password_again=Form(...)):
     if get_user(email):
-        return {"message": "user already exists"}
+        message_signup = 'User already exists'
+        # return {"message": "User already exists"}
     if password != password_again:
-        return {"message": "wrong password"}
+        message_signup = "Passwords don't match"
+        # return {"message": "Passwords don't match"}
+    if message_signup:
+        return templates.TemplateResponse("login.html", {"request": request, "message_signup": message_signup})
     create_user(email, password)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     expires = datetime.now(pytz.utc) + access_token_expires
@@ -304,13 +310,7 @@ def get_problems(date):
     cursor.execute(
         'SELECT statement FROM Problems '
         'WHERE id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s)',
-        date
-    )
-    # cursor.execute(
-    #     'SELECT statement FROM Problems '
-    #     'WHERE id = 143',
-    #     date
-    # )
+        (date))
 
     results = cursor.fetchall()
 
@@ -443,6 +443,8 @@ def about(request: Request):
 
 @app.get("/login")
 async def login_page(request: Request, current_user: Optional[str] = Depends(get_current_user)):
+    # if HTTPException:
+    #     templates.TemplateResponse()
     if current_user:
         return templates.TemplateResponse("logout.html", {"request": request})
     else:

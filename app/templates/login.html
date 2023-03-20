@@ -5,9 +5,10 @@
 </head>
 <link rel="stylesheet" href="/templates/styles.css">
 <style type="text/css">
-    header{
-            height: 7em;
-        }
+    header {
+        height: 7em;
+    }
+
     .container {
 
         display: flex;
@@ -60,10 +61,20 @@
 
 
     }
-    input[type=submit]{
+
+    input[type=submit] {
         padding: 0.5em 0.7em;
         border-radius: 15px;
 
+    }
+
+    message_container {
+        display: flex;
+        height: 5vh;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        /*background-color: #;*/
     }
 </style>
 <body>
@@ -77,6 +88,7 @@
         <a href="/login">Login</a>
     </nav>
 </header>
+
 <div class="container">
     <div class="spaces">
 
@@ -102,8 +114,16 @@
                 <input type="submit" value="Signup">
             </div>
         </form>
+        {% block content %}
+        <div class="message_container">
+            {% if message_signup is defined %}
+            <h1 style="color: #dc2626; margin-left: 0; font-size: 2.5em">{{ message_signup }}</h1>
+            {% endif %}
+        </div>
+
     </div>
     <div class="form-container" style="margin-left: 30px">
+
         <h2 style="margin-left: 0; font-family: Arial,serif; font-size: 2.5em"> Login</h2>
         <form action="/login" method="POST">
             <div class="form_block" style="margin-top: 0px">
@@ -124,6 +144,13 @@
                 <input type="submit" value="Login">
             </div>
         </form>
+
+        <div class="message_container">
+            {% if message_login is defined %}
+            <h1 style="color: #dc2626; margin-left: 0; font-size: 2.5em">{{ message_login }}</h1>
+            {% endif %}
+        </div>
+        {% endblock %}
     </div>
     <div class="spaces">
 
