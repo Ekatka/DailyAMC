@@ -43,8 +43,8 @@ services:
     #      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
-      - /etc/letsencrypt/live/dailyamc.xyz/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
-      - /etc/letsencrypt/live/dailyamc.xyz/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+#      - /etc/letsencrypt/live/dailyamc.xyz/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+#      - /etc/letsencrypt/live/dailyamc.xyz/privkey.pem:/etc/nginx/certs/privkey.pem:ro
     depends_on:
       - app
     networks:
