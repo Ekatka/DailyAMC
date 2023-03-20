@@ -40,11 +40,11 @@ services:
     build: ./nginx
     ports:
       - "80:80"
-    #      - "443:443"
+#      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
-#      - /etc/letsencrypt/live/dailyamc.xyz/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
-#      - /etc/letsencrypt/live/dailyamc.xyz/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+#      - ./certbot/conf:/etc/letsencrypt
+#      - ./certbot/www:/var/www/certbot
     depends_on:
       - app
     networks:
