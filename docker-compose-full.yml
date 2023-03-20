@@ -37,7 +37,8 @@ services:
 
   nginx:
     container_name: nginx
-    build: ./nginx
+#    build: ./nginx
+    image: nginx:latest
     ports:
       - "80:80"
       - "443:443"
