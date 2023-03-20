@@ -42,7 +42,7 @@
 
 
     </style>
-
+{% block content %}
 </head>
 <header>
     <div class="logo">
@@ -51,7 +51,7 @@
     <nav class="links">
         <a href="/">Home</a>
         <a href="/about">About</a>
-        <a href="/login">Login</a>
+        <a href="/login">{{ login }}</a>
     </nav>
 </header>
 
@@ -63,7 +63,7 @@
     <div class="middlepane">
         <div class="form" style=" text-align: center">
             <form method="POST" action="/submit-answer">
-                {% block content %}
+
                 {% for problem in problems %}
 
                 <p class="tex2jax" style=" text-align: left; font-size: 2.5em ">{{ problem }}</p>
@@ -78,7 +78,7 @@
 
                     {% endfor %}
                 </div>
-                {% endblock %}
+
                 <div style="text-align: center; margin-top: 30px">
                     <input style="width: 5em; height: 2em; font-size: 3em "
                            type="submit" value="Submit">
@@ -104,6 +104,6 @@
     </p>
 
 </footer>
-
+{% endblock %}
 
 </html>

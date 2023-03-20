@@ -4,6 +4,7 @@
     <title>DailyAMC</title>
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -20,7 +21,8 @@
         .button {
             cursor: default;
         }
-        p{
+
+        p {
             font-size: 2em;
         }
 
@@ -48,15 +50,14 @@
 
 </head>
 <header>
+    {% block content %}
     <div class="logo">
         <h1> DailyAMC </h1>
     </div>
     <nav class="links">
         <a href="/">Home</a>
-
         <a href="/about">About</a>
-        <a href="/login">Login</a>
-
+        <a href="/login">{{ login }}</a>
     </nav>
 </header>
 
@@ -68,7 +69,7 @@
     <div class="middlepane">
         <div class="form" style="text-align: center;">
             <form method="POST" action="/submit-answer">
-                {% block content %}
+
                 {% for problem in problems %}
 
                 <p class="tex2jax" style="text-align: left; font-size: 2.5em; justify-content: center">{{ problem }}</p>
@@ -81,7 +82,7 @@
                         {% else %}
                         <label class="button" style="height: 3em; padding: 1em">
                             {% endif %}
-                            <input type="radio" name="answer" value="{{ solution }}" >
+                            <input type="radio" name="answer" value="{{ solution }}">
                             <p style="font-size:2em">${{ solution }}$</p>
                         </label>
                     </label>

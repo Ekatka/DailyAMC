@@ -17,7 +17,13 @@ from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 from pydantic import BaseModel
 import socket
+import hashlib
+import uuid
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import os
+import pymysql
 
 #
 if socket.gethostname() == 'myXPS':
@@ -189,7 +195,7 @@ async def login(request: Request, form_data: ExtendedOAuth2PasswordRequestForm =
 
     user_dict = authenticate_user(email, password)
     if not user_dict:
-        error_message = "Incorrect username or password"
+        error_message = "Incorrect email or password"
         return templates.TemplateResponse("login.html", {"request": request, "message_login": error_message})
         # raise HTTPException(status_code=400, detail="Incorrect username or password")
     access_token = create_access_token(
@@ -252,8 +258,10 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         streak = get_streak(user_id)
         total, stats_by_day = get_statistics(user_id)
         is_login = True
+        login = "Log out"
     else:
         is_login = False
+        login = "Login"
 
     if is_right == 1:
 
@@ -261,7 +269,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answer": total, "stats_by_day": stats_by_day})
+                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -270,7 +278,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answer": total, "stats_by_day": stats_by_day})
+                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -285,6 +293,7 @@ def create_user(email, password):
 @app.post("/signup")
 async def sign_up(response: Response, request: Request, email: str = Form(...), password=Form(...),
                   password_again=Form(...)):
+    message_signup = 0
     if get_user(email):
         message_signup = 'User already exists'
         # return {"message": "User already exists"}
@@ -387,7 +396,7 @@ async def get_answer(response: Response, request: Request,
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answers": total, "stats_by_day": stats_by_day})
+                                               "total_answers": total, "stats_by_day": stats_by_day, "login": "Log out"})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -395,7 +404,7 @@ async def get_answer(response: Response, request: Request,
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answers": total, "stats_by_day": stats_by_day})
+                                               "total_answers": total, "stats_by_day": stats_by_day, "login": "Log out"})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -405,8 +414,10 @@ def problems(response: Response, request: Request, current_user: Optional[str] =
     # if "is_right" in request.cookies:
     #     redirect = RedirectResponse("/already_answered", status_code=status.HTTP_303_SEE_OTHER)
     #     return redirect
+    login = 'Login'
     if current_user:
         already_answer = already_answered(current_user)
+        login = 'Log out'
         if already_answer:
             # response.headers["Location"] = "/submit-answer"
             # response.status_code = 302
@@ -422,7 +433,8 @@ def problems(response: Response, request: Request, current_user: Optional[str] =
     user = {"user": user_text} if current_user else {"user": "You are not logged in"}
 
     return templates.TemplateResponse("header.html",
-                                      {"request": request, "problems": problems, "solutions": solutions, **user}
+                                      {"request": request, "problems": problems, "solutions": solutions, "login": login,
+                                       **user}
                                       )
 
 
@@ -437,8 +449,11 @@ def logout(response: Response):
 
 
 @app.get("/about")
-def about(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+def about(request: Request, current_user: Optional[str] = Depends(get_current_user)):
+    login = 'Login'
+    if current_user:
+        login = 'Log out'
+    return templates.TemplateResponse("about.html", {"request": request, "login": login})
 
 
 @app.get("/login")
@@ -455,6 +470,46 @@ async def login_page(request: Request, current_user: Optional[str] = Depends(get
 def shutdown_event():
     cursor.close()
     connection.close()
+
+
+def send_email(user, link):
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login(os.environ['EMAIL_USER'], os.environ['EMAIL_PASSWORD'])
+        msg = MIMEMultipart()
+        msg['From'] = os.environ['EMAIL_USER']
+        msg['To'] = user
+        msg['Subject'] = "Password reset link"
+        body = f"Please click on the link to reset your password: {link}"
+        msg.attach(MIMEText(body, 'plain'))
+        server.sendmail(os.environ['EMAIL_USER'], user, msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+@app.post("/forgot-password")
+async def forgot_password(email: str):
+    user = get_user(email)
+    if user:
+        reset_token = str(uuid.uuid4())
+        reset_link = f"/reset-password?token={reset_token}"
+        conn = pymysql.connect(host="localhost", user="user", password="password", database="database")
+        cursor = conn.cursor()
+        cursor.execute(f"UPDATE users SET reset_token='{reset_token}' WHERE email='{email}'")
+        conn.commit()
+        cursor.close()
+        conn.close()
+        if send_email(email, reset_link):
+            return {"message": "Password reset link has been sent to your email."}
+        else:
+            return {"message": "Error sending email. Please try again later."}
+    else:
+        raise HTTPException(status_code=400, detail="Email not found.")
 
 
 if __name__ == "__main__":
