@@ -2225,7 +2225,8 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(320) DEFAULT NULL,
   `password_hash` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  'reset_token' varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table dailyAMC.Users: ~12 rows (approximately)

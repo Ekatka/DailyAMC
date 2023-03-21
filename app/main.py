@@ -56,6 +56,13 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/templates", StaticFiles(directory="templates"), name="static")
 security = HTTPBasic()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+if not os.environ.get('EMAIL_USER'):
+    raise ("No email in env EMAIL_USER")
+if not os.environ.get('EMAIL_PASSWORD'):
+    raise ("No email in env EMAIL_PASSWORD")
+#
+# os.environ.get('EMAIL_USER') = 'katya.danilina@gmail.com'
+# os.environ['EMAIL_PASSWORD'] = 'bblqodlwgvaumtel'
 
 
 class ExtendedOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):
@@ -396,7 +403,8 @@ async def get_answer(response: Response, request: Request,
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answers": total, "stats_by_day": stats_by_day, "login": "Log out"})
+                                               "total_answers": total, "stats_by_day": stats_by_day,
+                                               "login": "Log out"})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -404,7 +412,8 @@ async def get_answer(response: Response, request: Request,
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answers": total, "stats_by_day": stats_by_day, "login": "Log out"})
+                                               "total_answers": total, "stats_by_day": stats_by_day,
+                                               "login": "Log out"})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -493,23 +502,45 @@ def send_email(user, link):
 
 
 @app.post("/forgot-password")
-async def forgot_password(email: str):
+async def forgot_password(request: Request, email: str = Form()):
     user = get_user(email)
     if user:
         reset_token = str(uuid.uuid4())
-        reset_link = f"/reset-password?token={reset_token}"
-        conn = pymysql.connect(host="localhost", user="user", password="password", database="database")
-        cursor = conn.cursor()
-        cursor.execute(f"UPDATE users SET reset_token='{reset_token}' WHERE email='{email}'")
-        conn.commit()
-        cursor.close()
-        conn.close()
+        reset_link = f"localhost/reset-password?token={reset_token}"
+        cursor.execute("UPDATE Users SET reset_token=%s WHERE email=%s", (reset_token, email))
+
+        connection.commit()
+
         if send_email(email, reset_link):
-            return {"message": "Password reset link has been sent to your email."}
+            return
         else:
             return {"message": "Error sending email. Please try again later."}
     else:
         raise HTTPException(status_code=400, detail="Email not found.")
+
+
+@app.get("/forgot-password")
+async def get_forgot_password(request: Request):
+    return templates.TemplateResponse("reset_password.html", {"request": request})
+
+
+@app.post("/reset-password")
+async def reset_password(request: Request, token: str, password=Form(), password_again=Form()):
+    message_signup = 0
+    if password != password_again:
+        message_signup = "Passwords don't match"
+
+    if message_signup:
+        return templates.TemplateResponse("new_password.html", {"request": request, "message_signup": message_signup})
+    hash = get_password_hash(password)
+    cursor.execute("UPDATE Users SET password_hash=%s, reset_token=NULL WHERE reset_token=%s", (hash, token))
+    connection.commit()
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/reset-password")
+async def serve_reset_password_page(request: Request, token: str):
+    return templates.TemplateResponse("new_password.html", {"request": request, "token": token})
 
 
 if __name__ == "__main__":
