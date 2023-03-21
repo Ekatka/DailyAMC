@@ -8,7 +8,7 @@
     <style>
         p {
             font-family: Arial, serif;
-            font-size: 30px;
+            font-size: 2.5em;
             text-align: left;
         }
 
@@ -20,6 +20,20 @@
 
         header {
             height: 7em;
+        }
+
+        @media only screen and (max-width: 1000px) {
+            .leftpane {
+                flex-basis: 10%;
+            }
+
+            .middlepane {
+                flex-basis: 80%;
+            }
+
+            .rightpane {
+                flex-basis: 10%;
+            }
         }
     </style>
 </head>
