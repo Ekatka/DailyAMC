@@ -6,7 +6,6 @@
     <title>DailyAMC</title>
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -40,23 +39,10 @@
 
         }
 
-        @media only screen and (max-width: 1000px) {
-            .leftpane {
-                flex-basis: 5%;
-            }
-
-            .middlepane {
-                flex-basis: 70%;
-            }
-
-            .rightpane {
-                flex-basis: 25%;
-            }
-        }
 
 
     </style>
-    {% block content %}
+{% block content %}
 </head>
 <header>
     <div class="logo">
@@ -103,7 +89,7 @@
 
     </div>
     <div class="rightpane">
-        <p style="text-align: left; margin-right: 0.5em; margin-left: 0.5em; font-size: 2.5em">{{ user }}</p>
+        <p style="text-align: left; margin-right: 1em; margin-left: 1em; font-size: 2.5em">{{ user }}</p>
     </div>
 
 </div>
