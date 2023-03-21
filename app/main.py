@@ -429,7 +429,7 @@ def problems(response: Response, request: Request, current_user: Optional[str] =
     # print(date)
     problems = get_problems(date)
     solutions = get_solutions(date)
-    user_text = "You are logged in as {}".format(current_user)
+    user_text = "You are logged in"
     user = {"user": user_text} if current_user else {"user": "You are not logged in"}
 
     return templates.TemplateResponse("header.html",
