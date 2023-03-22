@@ -530,9 +530,8 @@ async def reset_password(request: Request, token: str, password=Form(), password
     if "reset_token" not in column_names:
         # If the reset_token column doesn't exist, add it with varchar(50) data type
         cursor.execute("ALTER TABLE Users ADD COLUMN reset_token VARCHAR(50)")
+        connection.commit()
 
-    # Commit the changes to the database and close the connection
-    connection.commit()
     if password != password_again:
         message_signup = "Passwords don't match"
 
