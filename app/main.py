@@ -512,13 +512,13 @@ async def forgot_password(request: Request, email: str = Form()):
             cursor.execute("ALTER TABLE Users ADD COLUMN reset_token VARCHAR(50)")
             connection.commit()
         reset_token = str(uuid.uuid4())
-        reset_link = f"dailyamc.xyz/reset-password?token={reset_token}"
+        reset_link = f"localhost:8000/reset-password?token={reset_token}"
         cursor.execute("UPDATE Users SET reset_token=%s WHERE email=%s", (reset_token, email))
 
         connection.commit()
 
         if send_email(email, reset_link):
-            return
+            return {"message": "Password link send successfully, check your email"}
         else:
             return {"message": "Error sending email. Please try again later."}
     else:
