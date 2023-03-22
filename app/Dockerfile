@@ -11,5 +11,5 @@ RUN pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.tx
 COPY . /app
 RUN  chmod +x wait-for-mysql.sh
 EXPOSE 8000
-EXPOSE 465
+EXPOSE 587
 #CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
