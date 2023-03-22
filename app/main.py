@@ -61,8 +61,6 @@ if not os.environ.get('EMAIL_USER'):
 if not os.environ.get('EMAIL_PASSWORD'):
     raise ("No email in env EMAIL_PASSWORD")
 #
-# os.environ.get('EMAIL_USER') = 'katya.danilina@gmail.com'
-# os.environ['EMAIL_PASSWORD'] = 'bblqodlwgvaumtel'
 
 
 class ExtendedOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):
@@ -506,7 +504,7 @@ async def forgot_password(request: Request, email: str = Form()):
     user = get_user(email)
     if user:
         reset_token = str(uuid.uuid4())
-        reset_link = f"localhost/reset-password?token={reset_token}"
+        reset_link = f"dailyamc.xyz/reset-password?token={reset_token}"
         cursor.execute("UPDATE Users SET reset_token=%s WHERE email=%s", (reset_token, email))
 
         connection.commit()
@@ -527,6 +525,14 @@ async def get_forgot_password(request: Request):
 @app.post("/reset-password")
 async def reset_password(request: Request, token: str, password=Form(), password_again=Form()):
     message_signup = 0
+    cursor.execute("DESCRIBE Users")
+    column_names = [column[0] for column in cursor.fetchall()]
+    if "reset_token" not in column_names:
+        # If the reset_token column doesn't exist, add it with varchar(50) data type
+        cursor.execute("ALTER TABLE Users ADD COLUMN reset_token VARCHAR(50)")
+
+    # Commit the changes to the database and close the connection
+    connection.commit()
     if password != password_again:
         message_signup = "Passwords don't match"
 
