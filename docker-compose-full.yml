@@ -5,10 +5,8 @@ services:
     build: ./mysql/
     ports:
       - "3306:3306"
-    image: mysql:latest
     volumes:
       - ./mysql/db:/docker-entrypoint-initdb.d
-      - mysql-data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=archmage
       - MYSQL_DATABASE=dailyAMC
