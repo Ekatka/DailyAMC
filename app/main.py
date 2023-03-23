@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from math import floor
 from typing import Union
 import pytz
 import uvicorn
@@ -221,6 +222,32 @@ def get_solution_link():
     return cursor.fetchone()[0]
 
 
+def get_problem_stats():
+    date = datetime.today().strftime('%Y-%m-%d')
+    cursor.execute("SELECT problem_id FROM Assignments WHERE problem_date = %s", (date))
+    assignment_id = cursor.fetchone()[0]
+    print(assignment_id, "assignment_id")
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM Answers
+        WHERE assigment_id = %s
+    """, (assignment_id,))
+    total_entries = cursor.fetchone()[0] + 1
+    print(total_entries)
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM Answers
+        WHERE assigment_id = %s AND is_correct = 1
+    """, (assignment_id,))
+    correct_entries = cursor.fetchone()[0]
+    print(correct_entries)
+
+    percentage_correct = (correct_entries / total_entries) * 100
+    return total_entries, floor(percentage_correct)
+
+
 @app.post('/submit-answer')
 async def get_answer(response: Response, request: Request, answer: str = Form(...),
                      current_user: Optional[str] = Depends(get_current_user)):
@@ -242,7 +269,13 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
     link_to_solution = get_solution_link()
     total = None
     stats_by_day = None
+    total_solves = None
+    percantage = None
+
     if current_user:
+
+        total_solves, percantage = get_problem_stats()
+        print(total_solves, percantage)
         user = current_user
         print(user)
         get_user_id = 'SELECT id FROM Users WHERE email = %s'
@@ -265,7 +298,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         streak = get_streak(user_id)
         total, stats_by_day = get_statistics(user_id)
         is_login = True
-        login = "Log out"
+        login = "Logout"
     else:
         is_login = False
         login = "Login"
@@ -276,7 +309,8 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login})
+                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login,
+                                               "total_solves": total_solves, "percantage": percantage})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -285,7 +319,9 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login})
+                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login,
+                                               "total_solves": total_solves, "percantage": percantage
+                                               })
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -404,7 +440,7 @@ async def get_answer(response: Response, request: Request,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
                                                "total_answers": total, "stats_by_day": stats_by_day,
-                                               "login": "Log out"})
+                                               "login": "Logout"})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -413,7 +449,7 @@ async def get_answer(response: Response, request: Request,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
                                                "total_answers": total, "stats_by_day": stats_by_day,
-                                               "login": "Log out"})
+                                               "login": "Logout"})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
@@ -426,7 +462,7 @@ def problems(response: Response, request: Request, current_user: Optional[str] =
     login = 'Login'
     if current_user:
         already_answer = already_answered(current_user)
-        login = 'Log out'
+        login = 'Logout'
         if already_answer:
             # response.headers["Location"] = "/submit-answer"
             # response.status_code = 302
@@ -461,7 +497,7 @@ def logout(response: Response):
 def about(request: Request, current_user: Optional[str] = Depends(get_current_user)):
     login = 'Login'
     if current_user:
-        login = 'Log out'
+        login = 'Logout'
     return templates.TemplateResponse("about.html", {"request": request, "login": login})
 
 

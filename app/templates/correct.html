@@ -5,6 +5,7 @@
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 
+
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -111,6 +112,9 @@
                 </tr>
                 {% endfor %}
             </table>
+
+            <h1>Solves of the problem </h1>
+            Out of {{ total_solves }} solves by logged in users, {{ percantage }}% is correct.
             {% else %}
             <h3 style="font-size: 2em; font-family: Arial,serif"> Do you want to keep track of your streak and other
                 statistics? You can <a href="/login"> sign up/login</a></h3>
