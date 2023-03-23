@@ -274,7 +274,6 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
 
     if current_user:
 
-        total_solves, percantage = get_problem_stats()
         print(total_solves, percantage)
         user = current_user
         print(user)
@@ -297,6 +296,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         streak = get_streak(user_id)
         total, stats_by_day = get_statistics(user_id)
+        total_solves, percantage = get_problem_stats()
         is_login = True
         login = "Logout"
     else:
@@ -433,6 +433,7 @@ async def get_answer(response: Response, request: Request,
     is_login = True
     streak = get_streak(user_id)
     total, stats_by_day = get_statistics(user_id)
+    total_solves, percantage = get_problem_stats()
 
     if is_right == 1:
         response = templates.TemplateResponse("correct.html",
@@ -440,7 +441,8 @@ async def get_answer(response: Response, request: Request,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
                                                "total_answers": total, "stats_by_day": stats_by_day,
-                                               "login": "Logout"})
+                                               "login": "Logout", "total_solves": total_solves,
+                                               "percantage": percantage})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
     else:
@@ -449,7 +451,8 @@ async def get_answer(response: Response, request: Request,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
                                                "total_answers": total, "stats_by_day": stats_by_day,
-                                               "login": "Logout"})
+                                               "login": "Logout", "total_solves": total_solves,
+                                               "percantage": percantage})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
 
