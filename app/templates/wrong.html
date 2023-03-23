@@ -6,6 +6,7 @@
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 
+
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -16,6 +17,11 @@
             margin: 0;
             height: 100%;
             overflow: hidden
+        }
+
+        .stats {
+            margin: 0 auto;
+            max-width: 600px;
         }
 
         input[type="radio"]:checked {
@@ -68,7 +74,7 @@
                 {% block content %}
                 {% for problem in problems %}
 
-                <p class="tex2jax" style="text-align: left; font-size: 2.5em"  >{{ problem }}</p>
+                <p class="tex2jax" style="text-align: left; font-size: 2.5em">{{ problem }}</p>
                 {% endfor %}
                 <div class="button-container">
                     {% for solution in solutions %}
@@ -78,10 +84,10 @@
                         {% elif solution == answer %}
                         <label class="button" style="background-color: red; height: 3em; padding: 1em">
                             {% else %}
-                            <label class="button"  style="height: 3em; padding: 1em">
+                            <label class="button" style="height: 3em; padding: 1em">
                                 {% endif %}
                                 <input type="radio" name="answer" value="{{ solution }}">
-                               <p style=" font-size: 2em">${{ solution }}$</p>
+                                <p style=" font-size: 2em">${{ solution }}$</p>
 
                             </label>
                         </label>
@@ -93,28 +99,29 @@
             <h2 style="font-size: 2.5em; font-family: Arial,serif"><span style="color: red">Wrong! </span> You can
                 find possible solutions <a href="{{solution_link}}">HERE</a></h2>
             {% if is_login == True %}
-            <h3 style="font-size:2em; font-family: Arial,serif"> Streak : {{ streak }}</h3>
-            <h1> Statistics</h1>
-            <p>Total correct answers: {{ total_answers }}</p>
-            <table>
-                <tr>
-                    <th>Weekday</th>
-                    <th>Correct</th>
-                </tr>
-                {% for weekday, stats in stats_by_day.items() %}
-                <tr>
-                    <td>{{ weekday }}</td>
-                    <td>{{ stats['correct'] }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            <h1>Solves of the problem </h1>
-            Out of {{ total_solves }} solves by logged in users, {{ percantage }}% is correct.
-            {% else %}
-            <h3 style="font-size: 2em; font-family: Arial,serif"> Do you want to keep track of your streak and other
-                statistics? You can <a href="/login"> sign up/login</a></h3>
-            {% endif %}
-            {% endblock %}
+            <div class="stats">
+                <h3 style="font-size:2em; font-family: Arial,serif"> Streak : {{ streak }}</h3>
+                <p>Total correct answers: {{ total_answers }}</p>
+                <table>
+                    <tr>
+                        <th>Weekday</th>
+                        <th>Correct</th>
+                    </tr>
+                    {% for weekday, stats in stats_by_day.items() %}
+                    <tr>
+                        <td>{{ weekday }}</td>
+                        <td>{{ stats['correct'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <h1>Solves of the problem </h1>
+                Out of {{ total_solves }} solves by logged in users, {{ percantage }}% is correct.
+                {% else %}
+                <h3 style="font-size: 2em; font-family: Arial,serif"> Do you want to keep track of your streak and other
+                    statistics? You can <a href="/login"> sign up/login</a></h3>
+                {% endif %}
+                {% endblock %}
+            </div>
 
 
         </div>
