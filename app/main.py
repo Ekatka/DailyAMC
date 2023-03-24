@@ -299,6 +299,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
         total_solves, percantage = get_problem_stats()
         is_login = True
         login = "Logout"
+        print(total, "total")
     else:
         is_login = False
         login = "Login"
@@ -309,7 +310,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login,
+                                               "total_answers": total, "stats_by_day": stats_by_day, "login": login,
                                                "total_solves": total_solves, "percantage": percantage})
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
         return response
@@ -319,7 +320,7 @@ async def get_answer(response: Response, request: Request, answer: str = Form(..
                                               {"request": request, "problems": problems, "solutions": solutions,
                                                "correct": correct, "answer": answer, "solution_link": link_to_solution,
                                                "is_login": is_login, "streak": streak, "True": True,
-                                               "total_answer": total, "stats_by_day": stats_by_day, "login": login,
+                                               "total_answers": total, "stats_by_day": stats_by_day, "login": login,
                                                "total_solves": total_solves, "percantage": percantage
                                                })
         # response.set_cookie(key="is_right", value=is_right, expires=expire_time)
@@ -419,6 +420,7 @@ def get_statistics(user_id):
 async def get_answer(response: Response, request: Request,
                      current_user: Optional[str] = Depends(get_current_user)):
     date = datetime.today().strftime('%Y-%m-%d')
+    print(date)
     user_id = get_user_id(current_user)
     correct_answer = 'SELECT  solution_text FROM Solutions WHERE  problem_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s) AND is_answer = "1"'
     user_answer_correct = 'SELECT is_correct, user_answer FROM Answers WHERE assigment_id IN (SELECT problem_id FROM Assignments WHERE problem_date = %s) AND user_id = %s'
@@ -433,6 +435,7 @@ async def get_answer(response: Response, request: Request,
     is_login = True
     streak = get_streak(user_id)
     total, stats_by_day = get_statistics(user_id)
+    print('total', total)
     total_solves, percantage = get_problem_stats()
 
     if is_right == 1:

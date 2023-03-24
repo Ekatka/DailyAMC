@@ -2,20 +2,23 @@
 <html>
 <head>
 
+
     <link rel="stylesheet" type="text/css" href="/templates/styles.css">
     <title>DailyAMC</title>
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+
+
     </script>
     <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
+
     <style type="text/css">
         header {
             display: flex;
             height: 7em;
             width: 100%;
-
 
             justify-content: space-between;
             align-items: center;
@@ -23,87 +26,123 @@
             background-color: #50ABFF;
         }
 
+        .container {
+            display: flex;
+            flex-grow: 1;
+            flex-direction: column;
+
+        }
+
         html, body {
             margin: 0;
             height: 100%;
-            overflow: hidden
         }
 
-        footer {
-            position: absolute;
-            bottom: 10%;
-            text-align: center;
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .panes-row {
+            display: flex;
             width: 100%;
-            height: 5em;
-            padding: 0;
+            height: 80%;
+        }
 
+        header, main, footer {
+            width: 100%;
+        }
+
+        main {
+            flex-grow: 1;
         }
 
 
+        .container {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .lowerpane {
+
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            background-color: white; /* Change this to your desired background color */
+            padding: 1em;
+        }
 
     </style>
-{% block content %}
+    {% block content %}
 </head>
-<header>
-    <div class="logo">
-        <h1> DailyAMC </h1>
-    </div>
-    <nav class="links">
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/login">{{ login }}</a>
-    </nav>
-</header>
-
-<div class="container">
-
-
-    <div class="leftpane">
-    </div>
-    <div class="middlepane">
-        <div class="form" style=" text-align: center">
-            <form method="POST" action="/submit-answer">
-
-                {% for problem in problems %}
-
-                <p class="tex2jax" style=" text-align: left; font-size: 2.5em ">{{ problem }}</p>
-                {% endfor %}
-                <div class="button-container">
-                    {% for solution in solutions %}
-
-                    <label class="button">
-                        <input type="radio" name="answer" value="{{ solution }}" required>
-                        <p style="margin-right: 1em; font-size: 2em">${{ solution }}$</p>
-                    </label>
-
-                    {% endfor %}
-                </div>
-
-                <div style="text-align: center; margin-top: 30px">
-                    <input style="width: 5em; height: 2em; font-size: 3em "
-                           type="submit" value="Submit">
-                </div>
-            </form>
+<body>
+<div class="page-container">
+    <header>
+        <div class="logo">
+            <h1> DailyAMC </h1>
         </div>
+        <nav class="links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/login">{{ login }}</a>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+
+            <div class="panes-row">
+                <div class="leftpane">
+                </div>
+                <div class="middlepane">
+                    <div class="form" style=" text-align: center">
+                        <form method="POST" action="/submit-answer">
+
+                            {% for problem in problems %}
+
+                            <p class="tex2jax" style=" text-align: left; font-size: 2.5em ">{{ problem }}</p>
+                            {% endfor %}
+                            <div class="button-container">
+                                {% for solution in solutions %}
+
+                                <label class="button">
+                                    <input type="radio" name="answer" value="{{ solution }}" required>
+                                    <p style="margin-right: 1em; font-size: 2em">${{ solution }}$</p>
+                                </label>
+
+                                {% endfor %}
+                            </div>
+
+                            <div style="text-align: center; margin-top: 30px">
+                                <input style="width: 5em; height: 2em; font-size: 3em "
+                                       type="submit" value="Submit">
+                            </div>
+                        </form>
+                    </div>
 
 
-    </div>
-    <div class="rightpane">
-        <p style="text-align: left; margin-right: 1em; margin-left: 1em; font-size: 2.5em">{{ user }}</p>
-    </div>
+                </div>
+                <div class="rightpane">
+                    <p style="text-align: left; margin-right: 1em; margin-left: 1em; font-size: 2.5em">{{ user }}</p>
+                </div>
+            </div>
+
+            <div class="lowerpane">
+                <p style="text-align: center; font-family: Arial">The problems on this page are copyrighted by the <a
+                        rel="nofollow"
+                        class="external text"
+                        href="http://www.maa.org">Mathematical
+                    Association of America</a>'s <a rel="nofollow" class="external text" href="http://amc.maa.org">American
+                    Mathematics Competitions</a>
+                </p>
+            </div>
+
+        </div>
+    </main>
+
 
 </div>
-
-<footer>
-    <p style="text-align: center; font-family: Arial">The problems on this page are copyrighted by the <a
-            rel="nofollow"
-            class="external text"
-            href="http://www.maa.org">Mathematical
-        Association of America</a>'s <a rel="nofollow" class="external text" href="http://amc.maa.org">American
-        Mathematics Competitions</a>
-    </p>
-
-</footer>
+</body>
 {% endblock %}
 
 </html>

@@ -1,8 +1,8 @@
-html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden
-}
+/*html, body {*/
+/*    margin: 0;*/
+/*    height: 100%;*/
+/*    overflow: hidden*/
+/*}*/
 
 
 
@@ -38,20 +38,20 @@ p {
 
 .leftpane {
     flex-basis: 20%;
-    height: 200vh;
+    height: 80%;
     background-color: white;
 }
 
 .middlepane {
     flex-basis: 60%;
-    height: 100vh;
+    height: 80%;
     background-color: white;
 }
 
 
 .rightpane {
     flex-basis: 20%;
-    height: 100vh;
+    height: 80%;
     background-color: white;
 
     flex-direction: row;
