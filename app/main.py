@@ -490,7 +490,7 @@ def problems(response: Response, request: Request, current_user: Optional[str] =
 
 
 @app.post("/logout")
-def logout(response: Response):
+def logout(response: Response, ):
     try:
         response.delete_cookie("access_token")
         response.headers["Location"] = "/"
@@ -512,7 +512,7 @@ async def login_page(request: Request, current_user: Optional[str] = Depends(get
     # if HTTPException:
     #     templates.TemplateResponse()
     if current_user:
-        return templates.TemplateResponse("logout.html", {"request": request})
+        return templates.TemplateResponse("logout.html", {"request": request, "user": current_user})
     else:
         return templates.TemplateResponse("login.html", {"request": request})
 
